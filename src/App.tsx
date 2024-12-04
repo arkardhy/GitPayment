@@ -7,6 +7,7 @@ import { DashboardPage } from './pages/DashboardPage';
 import { AttendancePage } from './pages/AttendancePage';
 import { EmployeesPage } from './pages/EmployeesPage';
 import { AddEmployeePage } from './pages/AddEmployeePage';
+import { PaymentHistoryPage } from './pages/PaymentHistoryPage';
 import { storage } from './utils/storage';
 import { usePasswordProtection } from './contexts/PasswordProtectionContext';
 import { PasswordProtectionProvider } from './contexts/PasswordProtectionContext';
@@ -15,14 +16,13 @@ function AuthWrapper({ children }: { children: React.ReactNode }) {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Check if admin token exists
     if (!storage.isAdmin()) {
       navigate('/login');
     }
   }, [navigate]);
 
   if (!storage.isAdmin()) {
-    return null; // Return null instead of Navigate to prevent flash of login page
+    return null;
   }
 
   return <>{children}</>;
@@ -68,6 +68,7 @@ function App() {
           >
             <Route path="dashboard" element={<DashboardPage />} />
             <Route path="attendance" element={<AttendancePage />} />
+            <Route path="payment-history" element={<PaymentHistoryPage />} />
             <Route 
               path="employees" 
               element={
