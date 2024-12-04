@@ -4,7 +4,7 @@ import { supabase } from '../lib/supabase';
 import { toast } from 'react-hot-toast';
 import { Payment } from '../types';
 import { PaymentEditModal } from '../components/PaymentEditModal';
-import { History, Search, Edit2, Calendar } from 'lucide-react';
+import { History, Search, Edit2, Calendar, Trash2, AlertCircle } from 'lucide-react';
 import { formatCurrency } from '../utils/payment';
 
 export function PaymentHistoryPage() {
@@ -12,6 +12,7 @@ export function PaymentHistoryPage() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [editingPayment, setEditingPayment] = useState<Payment | null>(null);
+  const [deletingPayment, setDeletingPayment] = useState<string | null>(null);
 
   useEffect(() => {
     fetchPayments();
@@ -47,6 +48,36 @@ export function PaymentHistoryPage() {
       toast.error('Failed to fetch payment history');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDelete = async (paymentId: string) => {
+    setDeletingPayment(paymentId);
+    try {
+      const { error } = await supabase
+        .from('payments')
+        .delete()
+        .eq('id', paymentId);
+
+      if (error) throw error;
+
+      toast.success('Payment record deleted successfully');
+      await fetchPayments();
+    } catch (error) {
+      console.error('Error deleting payment:', error);
+      toast.error('Failed to delete payment record');
+    } finally {
+      setDeletingPayment(null);
+    }
+  };
+
+  const confirmDelete = (paymentId: string, employeeName: string, date: string) => {
+    const formattedDate = format(new Date(date), 'dd MMM yyyy');
+    const confirmed = window.confirm(
+      `Are you sure you want to delete the payment record for ${employeeName} on ${formattedDate}?\n\nThis action cannot be undone.`
+    );
+    if (confirmed) {
+      handleDelete(paymentId);
     }
   };
 
@@ -126,16 +157,40 @@ export function PaymentHistoryPage() {
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-[#46525A]">
-                      <button
-                        onClick={() => setEditingPayment(payment)}
-                        className="flex items-center text-[#2D85B2] hover:text-[#105283]"
-                      >
-                        <Edit2 className="w-4 h-4 mr-1" />
-                        Edit
-                      </button>
+                      <div className="flex items-center space-x-4">
+                        <button
+                          onClick={() => setEditingPayment(payment)}
+                          className="flex items-center text-[#2D85B2] hover:text-[#105283]"
+                        >
+                          <Edit2 className="w-4 h-4 mr-1" />
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => confirmDelete(payment.id, payment.employee_name, payment.date)}
+                          disabled={deletingPayment === payment.id}
+                          className="flex items-center text-red-500 hover:text-red-700 disabled:opacity-50"
+                        >
+                          {deletingPayment === payment.id ? (
+                            <div className="w-4 h-4 border-2 border-red-500 border-t-transparent rounded-full animate-spin mr-1" />
+                          ) : (
+                            <Trash2 className="w-4 h-4 mr-1" />
+                          )}
+                          Delete
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
+                {filteredPayments.length === 0 && (
+                  <tr>
+                    <td colSpan={5} className="px-6 py-8 text-center">
+                      <div className="flex flex-col items-center justify-center text-gray-500">
+                        <AlertCircle className="w-8 h-8 mb-2" />
+                        <p>No payment records found</p>
+                      </div>
+                    </td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </div>
