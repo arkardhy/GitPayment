@@ -1,0 +1,12 @@
+{
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/"
+    }
+  ],
+  "github": {
+    "silent": true
+  },
+  "framework": "vite"
+}

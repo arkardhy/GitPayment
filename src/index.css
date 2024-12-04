@@ -1,0 +1,60 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.rdp {
+  --rdp-cell-size: 40px;
+  --rdp-accent-color: #2563eb;
+  --rdp-background-color: #e0e7ff;
+  margin: 0;
+}
+
+.rdp-day_selected:not([disabled]) { 
+  background-color: var(--rdp-accent-color);
+  color: white;
+  font-weight: bold;
+}
+
+.rdp-day_selected:hover:not([disabled]) {
+  background-color: var(--rdp-accent-color);
+  opacity: 0.8;
+}
+
+.rdp-day:hover:not([disabled]) {
+  background-color: var(--rdp-background-color);
+  opacity: 0.8;
+}
+
+.rdp-day {
+  border-radius: 8px;
+}
+
+.rdp-day_range_start:not(.rdp-day_range_end) {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.rdp-day_range_end:not(.rdp-day_range_start) {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.rdp-day_range_start.rdp-day_range_end {
+  border-radius: 8px;
+}
+
+.rdp-day_range_start {
+  background-color: var(--rdp-accent-color) !important;
+  color: white !important;
+}
+
+.rdp-day_range_end {
+  background-color: var(--rdp-accent-color) !important;
+  color: white !important;
+}
+
+.rdp-day_range_middle {
+  background-color: var(--rdp-background-color) !important;
+  color: var(--rdp-accent-color) !important;
+  border-radius: 0;
+}
